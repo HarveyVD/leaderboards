@@ -38,9 +38,9 @@ CREATE TABLE `quizzes` (
 -- Records of quizzes
 -- ----------------------------
 BEGIN;
-INSERT INTO `quizzes` (`id`, `topic`, `created_at`, `updated_at`) VALUES (1, 'English', '2024-12-22 14:47:11', '2024-12-22 14:47:11');
-INSERT INTO `quizzes` (`id`, `topic`, `created_at`, `updated_at`) VALUES (2, 'Mathematics', '2024-12-23 05:23:21', '2024-12-23 05:23:21');
-INSERT INTO `quizzes` (`id`, `topic`, `created_at`, `updated_at`) VALUES (3, 'Physics', '2024-12-24 13:36:39', '2024-12-24 13:36:39');
+INSERT INTO `quizzes` (`id`, `topic`, `created_at`, `updated_at`) VALUES (1, 'House vocabulary', '2024-12-22 14:47:11', '2024-12-22 14:47:11');
+INSERT INTO `quizzes` (`id`, `topic`, `created_at`, `updated_at`) VALUES (2, 'Kitchen vocabulary', '2024-12-23 05:23:21', '2024-12-23 05:23:21');
+INSERT INTO `quizzes` (`id`, `topic`, `created_at`, `updated_at`) VALUES (3, 'Animal vocabulary', '2024-12-24 13:36:39', '2024-12-24 13:36:39');
 COMMIT;
 
 -- ----------------------------
