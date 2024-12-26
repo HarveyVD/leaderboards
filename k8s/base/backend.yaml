@@ -47,10 +47,10 @@ spec:
           value: "mypass123"
         resources:
           requests:
-            cpu: "200m"    # 0.2 CPU core
-            memory: "256Mi"
+            cpu: "500m"    # 0.2 CPU core
+            memory: "512Mi"
           limits:
-            cpu: "500m"    # 0.5 CPU core
+            cpu: "1000m"    # 0.5 CPU core
             memory: "512Mi"
 ---
 apiVersion: v1

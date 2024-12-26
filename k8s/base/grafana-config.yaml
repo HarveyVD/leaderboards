@@ -110,19 +110,3 @@ data:
         }
       ]
     }
-  spring-boot-stats.json: |
-    {
-      "id": null,
-      "title": "Spring Boot Statistics",
-      "tags": ["spring-boot"],
-      "gnetId": 12464,
-      "version": 1
-    }
-  jvm-micrometer.json: |
-    {
-      "id": null,
-      "title": "JVM (Micrometer)",
-      "tags": ["jvm", "micrometer"],
-      "gnetId": 4701,
-      "version": 1
-    } 

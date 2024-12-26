@@ -61,7 +61,7 @@ quiz
 - Java 17
 - Maven
 
-### Run Local
+### Run Standalone backend Local
 
 1. Start dependencies using Docker Compose:
 + `cd DEV-resources && docker-compose up -d quiz-activemq quiz-mysql-db quiz-redis`
@@ -70,7 +70,7 @@ quiz
 + `or you can use Intelli IDEA to run`
 3. Open frontend/index.html in a browser
 
-### Run in docker
+### Run two backend apps in docker
 1. Start all dependencies using Docker Compose:
 + `cd DEV-resources && docker-compose up -d`
 2. Open `localhost:3000` in a browser

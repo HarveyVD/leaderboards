@@ -1,5 +1,6 @@
 package com.dao.quiz.config;
 
+import com.dao.quiz.config.handlers.WebSocketMetricsHandler;
 import com.dao.quiz.config.props.ActiveMqBrokerConfigurationProps;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
@@ -22,6 +23,7 @@ import org.springframework.web.socket.handler.WebSocketHandlerDecorator;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Optional;
 
 import static com.dao.quiz.constants.MessagingConstants.*;
 import static com.dao.quiz.constants.WebConstants.API_WEBSOCKET_PREFIX;
@@ -32,14 +34,7 @@ import static com.dao.quiz.constants.WebConstants.API_WEBSOCKET_PREFIX;
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final ActiveMqBrokerConfigurationProps activeMqBrokerConfigurationProps;
-    private final MeterRegistry meterRegistry;
-    private final AtomicInteger activeSessions = new AtomicInteger(0);
-
-    @PostConstruct
-    public void init() {
-        meterRegistry.gauge("websocket.sessions.active", 
-            Tags.of("pod", System.getenv("HOSTNAME")), activeSessions);
-    }
+    private final Optional<WebSocketMetricsHandler> metricsHandler;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -72,28 +67,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
-        registration.addDecoratorFactory(handler -> {
-            return new WebSocketHandlerDecorator(handler) {
-                @Override
-                public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-                    meterRegistry.counter("websocket.sessions.total").increment();
-                    activeSessions.incrementAndGet();
-                    super.afterConnectionEstablished(session);
-                }
-
-                @Override
-                public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
-                    activeSessions.decrementAndGet();
-                    super.afterConnectionClosed(session, closeStatus);
-                }
-
-                @Override
-                public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-                    meterRegistry.counter("websocket.messages.received",
-                        Tags.of("pod", System.getenv("HOSTNAME"))).increment();
-                    super.handleMessage(session, message);
-                }
-            };
-        });
+        metricsHandler.ifPresent(handler -> handler.configureWebSocketTransport(registration));
     }
 }

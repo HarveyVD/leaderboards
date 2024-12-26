@@ -3,7 +3,6 @@ kind: Kustomization
 
 resources:
 - backend.yaml
-- backend-hpa.yaml
 - frontend.yaml
 - frontend-config.yaml
 - redis.yaml
