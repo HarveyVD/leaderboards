@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: quiz
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${/db/mysql/host:127.0.0.1}:${/db/mysql/port:3306}/${/db/mysql/database:quiz}?verifyServerCertificate=${/db/mysql/useSSL:false}&useSSL=${/db/mysql/useSSL:false}&requireSSL=${/db/mysql/useSSL:false}&allowPublicKeyRetrieval=${/db/mysql/allowPublicKeyRetrieval:true}
+    username: ${/db/mysql/username:root}
+    password: ${/db/mysql/password:mypass123}
+  data:
+    jpa:
+      repositories:
+        enabled: true
+  jpa:
+    properties:
+      hibernate:
+        format_sql: false
+        show_sql: false
+        use_sql_comments: false
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        query:
+          plan_cache_max_size: 512
+          plan_parameter_metadata_max_size: 128
+    hibernate:
+      ddl-auto: none
+  liquibase:
+    enabled: false
+application:
+  security:
+    jwt:
+      secret: ${/security/jwt/singing_key:23(*&)%^$^$&^&%DFSABCVBNWweqwdSDFDSF@&#BJDHQ#I$YBIQ#*(XY%$234FDGas32423}}
+      issuer: ${/security/jwt/issuer:quiz-demo}
+      access_token_expiration: ${/security/jwt/access_token_expiration:120M}
+  storage:
+    redis:
+      host: ${/db/redis/host:127.0.0.1}
+      port: ${/db/redis/port:6379}
+  messaging:
+    message-broker: redis
+    activemq:
+      host: ${/mq/activemq/host/stomp:localhost}
+      port: ${/mq/activemq/port/stomp:61613}
+      username: ${/mq/activemq/username:artemis}
+      password: ${/mq/activemq/password:artemis}
+
+

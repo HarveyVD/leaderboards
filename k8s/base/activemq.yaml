@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quiz-activemq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quiz-activemq
+  template:
+    metadata:
+      labels:
+        app: quiz-activemq
+    spec:
+      containers:
+      - name: activemq
+        image: apache/activemq-artemis:2.32.0
+        ports:
+        - containerPort: 61613
+        - containerPort: 8161
+        env:
+        - name: ARTEMIS_USERNAME
+          value: "artemis"
+        - name: ARTEMIS_PASSWORD  
+          value: "artemis"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: quiz-activemq
+spec:
+  selector:
+    app: quiz-activemq
+  ports:
+  - name: broker
+    port: 61616
+    targetPort: 61616
+  - name: stomp
+    port: 61613
+    targetPort: 61613
+  - name: console
+    port: 8161 
+    targetPort: 8161 

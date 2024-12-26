@@ -1,0 +1,76 @@
+logging:
+  level:
+    root: info
+    org.springframework.web: error
+    org.hibernate.SQL: info
+    org.springframework.messaging: trace
+    org.springframework.web.socket.messaging: trace
+    com.dao: debug
+
+spring:
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/quiz?verifyServerCertificate=false&useSSL=false&requireSSL=false&allowPublicKeyRetrieval=true
+
+hibernate:
+  connection:
+    isolation: 2
+  current_session_context_class: thread
+  dialect: org.hibernate.dialect.MySQL8Dialect
+  format_sql: true
+  jdbc:
+    time_zone: UTC
+  max_fetch_depth: 5
+  show_sql: true
+  use_sql_comments: true
+
+eureka:
+  client:
+    enabled: false
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+    healthcheck:
+      enabled: true
+  instance:
+    prefer-ip-address: true
+
+application:
+  storage:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  messaging:
+    message-broker: redis
+    activemq:
+      host: ${ACTIVEMQ_HOST:localhost}
+      port: ${ACTIVEMQ_PORT:61613}
+      username: ${ACTIVEMQ_USERNAME:artemis}
+      password: ${ACTIVEMQ_PASSWORD:artemis}
+
+management:
+  health:
+    jms:
+      enabled: false
+  endpoint:
+    health:
+      show-details: when_authorized
+  endpoints:
+    web:
+      base-path: /api/v1/manage
+      exposure:
+        include: metrics,health,prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      sla:
+        http.server.requests: 10ms, 50ms, 100ms, 200ms, 500ms
+    enable:
+      jvm: true
+      process: true
+      system: true
+      tomcat: true
+      spring: true
+      web: true
+

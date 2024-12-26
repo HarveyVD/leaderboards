@@ -1,0 +1,18 @@
+logging:
+  level:
+    root: ${/logging/root/level:info}
+    org.springframework.web: debug
+    org.springframework.messaging: trace
+    org.springframework.web.socket.messaging: trace
+    com.dao: debug
+hibernate:
+  connection:
+    isolation: 2
+
+application:
+  eureka:
+    enabled: false
+management:
+  health:
+    jms:
+      enabled: false

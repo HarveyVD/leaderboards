@@ -1,0 +1,16 @@
+.classpath
+build
+dist
+.settings
+node_modules
+.idea
+.gradle
+*.class
+out
+classes/
+backend/build/
+backend/out/
+eureka/build/
+eureka/out/
+gateway/build/
+gateway/out/

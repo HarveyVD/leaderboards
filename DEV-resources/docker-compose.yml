@@ -1,0 +1,94 @@
+version: '3.6'
+
+services:
+  quiz-frontend:
+    build: ../frontend
+    ports:
+      - "3000:80"
+    environment:
+      - API_URL=http://localhost:8080/api/v1
+    depends_on:
+      - quiz-gateway
+  quiz-eureka:
+    build: ../eureka
+    ports:
+      - '8761:8761'
+  quiz-gateway:
+    build: ../gateway
+    ports:
+      - '8080:8080'
+    environment:
+      - EUREKA_URI=http://quiz-eureka:8761/eureka
+    depends_on:
+      - quiz-eureka
+  quiz-activemq:
+    image: apache/activemq-artemis:2.32.0
+    container_name: quiz-activemq
+    environment:
+      - ARTEMIS_USERNAME=artemis
+      - ARTEMIS_PASSWORD=artemis
+    ports:
+      - 8161:8161
+      - 61616:61616
+      - 61613:61613
+    volumes:
+      - activemq-data:/var/lib/artemis/data
+  quiz-mysql-db:
+    image: 'mysql:8.1.0'
+    container_name: quiz-dev-mysql
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "mypass123"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/1.sql
+      - ./scripts/init_data.sql:/docker-entrypoint-initdb.d/2.sql
+  quiz-redis:
+    image: 'redis:7.0.4'
+    container_name: quiz-redis-db
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+  quiz-app1:
+    build: ../backend
+    container_name: quiz-backend-1
+    ports:
+      - "8082:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      MYSQL_HOST: quiz-mysql-db
+      REDIS_HOST: quiz-redis
+      ACTIVEMQ_HOST: quiz-activemq
+      EUREKA_URI: http://quiz-eureka:8761/eureka
+    depends_on:
+      - quiz-activemq
+      - quiz-mysql-db
+      - quiz-redis
+      - quiz-eureka
+  quiz-app2:
+    build: ../backend
+    container_name: quiz-backend-2
+    ports:
+      - "8081:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      MYSQL_HOST: quiz-mysql-db
+      REDIS_HOST: quiz-redis
+      ACTIVEMQ_HOST: quiz-activemq
+      EUREKA_URI: http://quiz-eureka:8761/eureka
+    depends_on:
+      - quiz-activemq
+      - quiz-mysql-db
+      - quiz-redis
+      - quiz-eureka
+volumes:
+  mysql-data:
+    driver: local
+  redis-data:
+    driver: local
+  activemq-data:
+    driver: local
+

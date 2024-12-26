@@ -1,0 +1,3 @@
+application:
+  eureka:
+    enabled: false 

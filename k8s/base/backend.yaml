@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quiz-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: quiz-backend
+  template:
+    metadata:
+      labels:
+        app: quiz-backend
+    spec:
+      initContainers:
+      - name: wait-for-mysql
+        image: busybox:1.28
+        command: ['sh', '-c', 'until nc -z quiz-mysql 3306; do echo waiting for mysql; sleep 2; done;']
+      - name: wait-for-redis
+        image: busybox:1.28
+        command: ['sh', '-c', 'until nc -z quiz-redis 6379; do echo waiting for redis; sleep 2; done;']
+      - name: wait-for-activemq
+        image: busybox:1.28
+        command: ['sh', '-c', 'until nc -z quiz-activemq 61613; do echo waiting for activemq; sleep 2; done;']
+      containers:
+      - name: backend
+        image: quiz-backend:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "k8s"
+        - name: REDIS_HOST
+          value: "quiz-redis"
+        - name: ACTIVEMQ_HOST  
+          value: "quiz-activemq"
+        - name: ACTIVEMQ_USERNAME
+          value: "artemis"
+        - name: ACTIVEMQ_PASSWORD
+          value: "artemis"
+        - name: MYSQL_HOST  
+          value: "quiz-mysql"
+        - name: MYSQL_PORT
+          value: "3306"
+        - name: MYSQL_ROOT_PASSWORD
+          value: "mypass123"
+        resources:
+          requests:
+            cpu: "200m"    # 0.2 CPU core
+            memory: "256Mi"
+          limits:
+            cpu: "500m"    # 0.5 CPU core
+            memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: quiz-backend-service
+spec:
+  selector:
+    app: quiz-backend
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080 

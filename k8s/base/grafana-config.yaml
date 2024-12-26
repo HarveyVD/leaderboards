@@ -1,0 +1,128 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources
+data:
+  prometheus.yaml: |
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      url: http://prometheus:9090
+      access: proxy
+      isDefault: true
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards-config
+data:
+  provider.yaml: |
+    apiVersion: 1
+    providers:
+    - name: 'default'
+      orgId: 1
+      folder: ''
+      type: file
+      disableDeletion: false
+      updateIntervalSeconds: 30
+      allowUiUpdates: true
+      options:
+        path: /var/lib/grafana/dashboards
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+data:
+  websocket-metrics.json: |
+    {
+      "id": null,
+      "title": "WebSocket Metrics",
+      "tags": ["websocket"],
+      "timezone": "browser",
+      "schemaVersion": 38,
+      "version": 1,
+      "panels": [
+        {
+          "title": "Total Active Connections",
+          "type": "graph",
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 0
+          },
+          "targets": [
+            {
+              "expr": "sum(websocket_sessions_active{application=\"quiz\"})",
+              "legendFormat": "Total Active Connections"
+            }
+          ]
+        },
+        {
+          "title": "Connections per Pod",
+          "type": "graph",
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 0
+          },
+          "targets": [
+            {
+              "expr": "websocket_sessions_active{application=\"quiz\"}",
+              "legendFormat": "Pod: {{pod}}"
+            }
+          ]
+        },
+        {
+          "title": "Total Message Rate",
+          "type": "graph",
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 8
+          },
+          "targets": [
+            {
+              "expr": "sum(rate(websocket_messages_received_total{application=\"quiz\"}[5m]))",
+              "legendFormat": "Total Messages/s"
+            }
+          ]
+        },
+        {
+          "title": "Message Rate per Pod",
+          "type": "graph",
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 8
+          },
+          "targets": [
+            {
+              "expr": "rate(websocket_messages_received_total{application=\"quiz\"}[5m])",
+              "legendFormat": "Pod: {{pod}}"
+            }
+          ]
+        }
+      ]
+    }
+  spring-boot-stats.json: |
+    {
+      "id": null,
+      "title": "Spring Boot Statistics",
+      "tags": ["spring-boot"],
+      "gnetId": 12464,
+      "version": 1
+    }
+  jvm-micrometer.json: |
+    {
+      "id": null,
+      "title": "JVM (Micrometer)",
+      "tags": ["jvm", "micrometer"],
+      "gnetId": 4701,
+      "version": 1
+    } 
